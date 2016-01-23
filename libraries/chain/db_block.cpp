@@ -106,7 +106,7 @@ std::vector<block_id_type> database::get_block_ids_on_fork(block_id_type head_of
  */
 bool database::push_block(const signed_block& new_block, uint32_t skip)
 {
-   //idump((new_block.block_num())(new_block.id())(new_block.timestamp)(new_block.previous));
+//   idump((new_block.block_num())(new_block.id())(new_block.timestamp)(new_block.previous));
    bool result;
    detail::with_skip_flags( *this, skip, [&]()
    {
@@ -567,7 +567,10 @@ processed_transaction database::apply_transaction(const signed_transaction& trx,
 processed_transaction database::_apply_transaction(const signed_transaction& trx)
 { try {
    uint32_t skip = get_node_properties().skip_flags;
-   trx.validate();
+
+   if( !(skip&skip_validate) )
+      trx.validate();
+
    auto& trx_idx = get_mutable_index_type<transaction_index>();
    const chain_id_type& chain_id = get_chain_id();
    auto trx_id = trx.id();
